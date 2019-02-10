@@ -10,6 +10,8 @@ import UIKit
 
 class ViewController: UIViewController {
     @IBOutlet var receiveLabel: UILabel?
+    @IBOutlet var offsetLabel: UILabel?
+    @IBOutlet var rttLabel: UILabel?
 
     private let slave: SyncSlave = SyncSlave()
     private let master: SyncMaster = SyncMaster()
@@ -27,8 +29,13 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: SyncSlaveDelegate {
-    func syncSlave(_ slave: SyncSlave, master masterId: UInt32, becameAvailable address: Data) {
-        receiveLabel?.text = String(describing: masterId)
-        slave.synchronize(withMaster: address)
+    func syncSlave(_ slave: SyncSlave, masterBecameAvailable master: MasterReference) {
+        receiveLabel?.text = String(describing: master.uniqueId)
+        slave.synchronize(withMaster: master)
+    }
+
+    func syncSlave(_ slave: SyncSlave, finishedWithOffset offset: TimeInterval, roundTripTime: TimeInterval) {
+        offsetLabel?.text = String(describing: offset)
+        rttLabel?.text = String(describing: roundTripTime)
     }
 }

@@ -46,6 +46,7 @@ struct SlaveSyncRequest: ProtocolPacket {
 
 struct MasterSyncResponse: ProtocolPacket {
     let magicNumber: UInt64 = Config.magicNumber
+    let uniqueId: UInt32
     let t1: Date
     let t2: Date
 }

@@ -12,12 +12,13 @@ import CocoaAsyncSocket
 class SyncMaster: NSObject {
     let uniqueId: UInt32 = arc4random()
 
+    private let dispatchQueue = DispatchQueue(label: "SyncMaster")
     private var broadcastSocket: GCDAsyncUdpSocket?
 
     override init() {
         super.init()
 
-        broadcastSocket = GCDAsyncUdpSocket(delegate: self, delegateQueue: DispatchQueue.main)
+        broadcastSocket = GCDAsyncUdpSocket(delegate: self, delegateQueue: dispatchQueue)
         broadcastSocket?.setIPv6Enabled(false)
 
         do {
@@ -62,7 +63,7 @@ extension SyncMaster: GCDAsyncUdpSocketDelegate {
     }
 
     private func respondToSyncRequest(fromSlave address: Data, withT1 t1: Date) {
-        let response = MasterSyncResponse(t1: t1, t2: Date())
+        let response = MasterSyncResponse(uniqueId: uniqueId, t1: t1, t2: Date())
         broadcastSocket?.send(encode(value: response), toAddress: address, withTimeout: 0.0, tag: 0)
     }
 }
